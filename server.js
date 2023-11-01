@@ -24,11 +24,21 @@ app.get('/', (req, res) => {
         // console.log("Joined room");
       socket.join(roomId)
       socket.to(roomId).emit('user-connected', userId);
-      
+      // messages
+    socket.on('message', (message) => {
+        //send message to the same room
+        io.to(roomId).emit('createMessage', message)
+    }); 
+
+    socket.on('disconnect', () => {
+        socket.to(roomId).broadcast.emit('user-disconnected', userId)
+      })
 
     })
   })
+
+
   
 
 
-server.listen(3000);
+server.listen(process.env.PORT||3000);
